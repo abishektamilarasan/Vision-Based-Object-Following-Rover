@@ -204,6 +204,3 @@ python main.py
 - **Stiction Linearization:** Piecewise compensation ($V_{\text{breakaway}} = 85/255$) overcomes the L298N Darlington transistor 1.8V drop.
 
 ---
-
-## 📄 License & Attribution
-Developed for academic evaluation under the Control Systems curriculum at VIT Chennai. Open for educational and research reference.
