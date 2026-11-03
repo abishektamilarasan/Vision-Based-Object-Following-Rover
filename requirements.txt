@@ -1,0 +1,11 @@
+opencv-python
+ultralytics
+requests
+numpy
+customtkinter
+Pillow
+websockets
+torch
+torchvision
+transformers
+lapx
