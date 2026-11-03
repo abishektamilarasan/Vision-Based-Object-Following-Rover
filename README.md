@@ -37,7 +37,7 @@ Rather than relying on naive, open-loop proportional steering or raw bounding-bo
 - **Dual-Axis Closed-Loop PID Control** (angular steering and linear distance) with anti-windup clamping to prevent integrator saturation.
 - **Actuator Linearization & Stiction Compensation** to overcome non-linear DC motor deadzones through an L298N H-Bridge driver ($V_{\text{breakaway}} = 85/255$).
 - **Forward-Bias Differential Arc Mixing** with first-order exponential smoothing ($\alpha = 0.45$) to replace abrupt skid-steer pivots with continuous curved arcs.
-- **Pre-Trained AI Models Included:** Comes pre-packaged with our custom fine-tuned `custom_bag.pt` model, standard `yolov8n.pt`, and optimized `yolov8n.onnx` ready to run out of the box.
+- **Pre-Trained AI Models Included:** Comes pre-packaged with our custom fine-tuned `custom_bag.pt` model and standard `yolov8n.pt` ready to run out of the box.
 - **Distributed Architecture:** Offloads heavy compute from microcontrollers to a companion PC while running hard real-time motor actuation behind a 500 ms safety watchdog on an ESP32.
 
 ---
@@ -150,7 +150,6 @@ $$G_{\text{OL}}(s) = \frac{(0.06s^2 + 0.35s + 0.001) \cdot 3.10}{s^2 (0.10s + 1)
 ├── models/
 │   ├── custom_bag.pt               # Fine-tuned YOLO weights for luggage/backpacks
 │   ├── yolov8n.pt                  # Pre-trained COCO base YOLOv8 model
-│   └── yolov8n.onnx                # Optimized ONNX runtime export
 ├── server/
 │   ├── main.py                     # CustomTkinter dashboard & multi-threaded ML pipeline
 │   ├── config.py                   # System thresholds, PID gains, network & ArUco config
