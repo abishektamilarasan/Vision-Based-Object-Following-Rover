@@ -1,9 +1,5 @@
 # Vision-Based Object Following Autonomous Rover
 
-> **Course Project:** BECE302L – Control Systems  
-> **Institution:** Vellore Institute of Technology (VIT), Chennai  
-> **Authors:** Abishek Tamilarasan, Bhavesh Krishna KP, Jhofred Smile R  
-> **Under Guidance of:** Prof. Akash Kumar Pradhan  
 
 ---
 
