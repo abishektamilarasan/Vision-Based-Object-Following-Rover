@@ -26,7 +26,6 @@ Differential-drive rover chassis with smartphone mount, L298N driver, dual IR se
 <div align="center">
   <img src="docs/images/rover_phone_mount.jpg" width="31%" alt="Rover Phone Mount" />
   <img src="docs/images/rover_front_power.jpg" width="31%" alt="Rover Front & Power Assembly" />
-  <img src="docs/images/rover_chassis_top.jpg" width="34%" alt="Rover Chassis Top View" />
 </div>
 
 <br>
