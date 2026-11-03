@@ -1,0 +1,11 @@
+# Custom ByteTrack tracker settings
+# Re-identification is handled externally by our CLIP module.
+# Based on ultralytics default bytetrack.yaml with track_buffer increased.
+
+tracker_type: bytetrack
+track_high_thresh: 0.5
+track_low_thresh: 0.1
+new_track_thresh: 0.6
+track_buffer: 300
+match_thresh: 0.8
+fuse_score: True

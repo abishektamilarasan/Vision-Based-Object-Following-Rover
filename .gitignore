@@ -1,0 +1,17 @@
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pt
+*.onnx
+.ipynb_checkpoints/
+*.log
+runs/
+weights/
+.gradle/
+.idea/
+build/
+local.properties
+CS_ArUco_Imp/
+rover-follower/
