@@ -3,6 +3,7 @@
 [![Hardware Demo & Working Video](https://img.shields.io/badge/Google%20Drive-Working%20Demo%20Video-blue?style=for-the-badge&logo=googledrive)](https://drive.google.com/drive/folders/1dAfxiTJPu-zd8ba8-SUdOzN-zNZKmlGV?usp=drive_link)
 [![OpenCV](https://img.shields.io/badge/OpenCV-ArUco%20%26%20Vision-green?style=for-the-badge&logo=opencv)](https://opencv.org/)
 [![ESP32](https://img.shields.io/badge/ESP32-Real--Time%20LEDC%20PWM-red?style=for-the-badge&logo=espressif)](https://www.espressif.com/)
+[![Android App](https://img.shields.io/badge/Android%20App-Jetpack%20Compose-3DDC84?style=for-the-badge&logo=android)](android_app/)
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-Target%20Perception-purple?style=for-the-badge)](https://github.com/ultralytics/ultralytics)
 
 ---
@@ -20,8 +21,8 @@ Real-time tracking station running on the companion PC with dual architecture mo
 
 <br>
 
-### 🤖 Hardware Prototype & 📱 Mobile Controller
-Differential-drive rover chassis with smartphone mount, L298N driver, dual IR sensors, and companion Android remote control station:
+### 🤖 Hardware Prototype & 📱 Mobile Controller App
+Differential-drive rover chassis with smartphone mount, L298N driver, dual IR sensors, and companion Android remote control station (pre-compiled APK available in `android_app/release/rover-control.apk`):
 
 <div align="center">
   <img src="docs/images/rover_phone_mount.jpg" width="31%" alt="Rover Phone Mount" />
@@ -50,6 +51,7 @@ Rather than relying on naive, open-loop proportional steering or raw bounding-bo
 - **Actuator Linearization & Stiction Compensation** to overcome non-linear DC motor deadzones through an L298N H-Bridge driver ($V_{\text{breakaway}} = 85/255$).
 - **Forward-Bias Differential Arc Mixing** with first-order exponential smoothing ($\alpha = 0.45$) to replace abrupt skid-steer pivots with continuous curved arcs.
 - **Pre-Trained AI Models Included:** Comes pre-packaged with our custom fine-tuned `custom_bag.pt` model and standard `yolov8n.pt` ready to run out of the box.
+- **Android Companion App:** Complete Kotlin / Jetpack Compose application for real-time mobile teleoperation, target photo registration, and live WebSocket telemetry sync.
 - **Distributed Architecture:** Offloads heavy compute from microcontrollers to a companion PC while running hard real-time motor actuation behind a 500 ms safety watchdog on an ESP32.
 
 ---
@@ -75,6 +77,10 @@ graph TD
         FG --> GUI[main.py<br/>CustomTkinter Dark Station]
         NAV --> GUI
         GUI --> WS[WebSocket Server :8765<br/>Mobile Telemetry Sync]
+    end
+
+    subgraph Mobile Controller Node
+        APP[Android App<br/>Jetpack Compose] -->|WebSocket JSON| WS
     end
 
     subgraph Actuation & Physical Plant Node Rover
@@ -135,6 +141,10 @@ $$\mathbf{z}_k = \begin{bmatrix} c_x & c_y & w & h \end{bmatrix}^T$$
 
 ```
 .
+├── android_app/                    # Native Android companion application
+│   ├── app/                        # Kotlin source & Compose UI layouts
+│   └── release/
+│       └── rover-control.apk       # Pre-compiled installable debug APK
 ├── docs/
 │   └── images/                     # Hardware chassis, dashboard & app screenshots
 ├── firmware/
@@ -160,7 +170,7 @@ $$\mathbf{z}_k = \begin{bmatrix} c_x & c_y & w & h \end{bmatrix}^T$$
 │   └── frame_grabber.py            # Async threaded MJPEG frame ingestion
 ├── PROJECT_DOCUMENTATION.md        # Comprehensive technical report & viva preparation guide
 ├── requirements.txt                # Python dependencies
-└── .gitignore                      # Git ignore rules for virtual environments
+└── .gitignore                      # Git ignore rules for build artifacts
 ```
 
 ---
@@ -193,6 +203,11 @@ cd server
 python main.py
 ```
 *(All detection models in `models/` are pre-packaged and load automatically).*
+
+### 5. Running the Android Remote App
+- **Option A (Install APK):** Transfer and install [`android_app/release/rover-control.apk`](android_app/release/rover-control.apk) on your Android device.
+- **Option B (Build from source):** Open `android_app/` in Android Studio and run on your connected device.
+- Connect to your companion laptop's local IP on port `8765` for real-time mobile joystick driving, start/stop commands, and live tracking status.
 
 ---
 
