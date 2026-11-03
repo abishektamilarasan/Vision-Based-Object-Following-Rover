@@ -205,6 +205,13 @@ python main.py
 *(All detection models in `models/` are pre-packaged and load automatically).*
 
 ### 5. Running the Android Remote App
+1. Open the `android_app` directory in **Android Studio**.
+2. Let Gradle sync dependencies automatically.
+3. Connect your Android phone with **USB Debugging** enabled.
+4. Click **Run (?)** to install and launch directly onto your phone.
+5. In the app, type your laptop's local IP (e.g. `192.168.29.204`) and tap **Connect** to link with the server on port `8765`.
+*(See [ndroid_app/README.md](android_app/README.md) for full instructions).*
+
 - **Option A (Install APK):** Transfer and install [`android_app/release/rover-control.apk`](android_app/release/rover-control.apk) on your Android device.
 - **Option B (Build from source):** Open `android_app/` in Android Studio and run on your connected device.
 - Connect to your companion laptop's local IP on port `8765` for real-time mobile joystick driving, start/stop commands, and live tracking status.
