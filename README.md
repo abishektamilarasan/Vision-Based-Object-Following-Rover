@@ -1,6 +1,5 @@
 # Vision-Based Object Following Autonomous Rover
 
-
 [![Hardware Demo & Working Video](https://img.shields.io/badge/Google%20Drive-Working%20Demo%20Video-blue?style=for-the-badge&logo=googledrive)](https://drive.google.com/drive/folders/1dAfxiTJPu-zd8ba8-SUdOzN-zNZKmlGV?usp=drive_link)
 [![OpenCV](https://img.shields.io/badge/OpenCV-ArUco%20%26%20Vision-green?style=for-the-badge&logo=opencv)](https://opencv.org/)
 [![ESP32](https://img.shields.io/badge/ESP32-Real--Time%20LEDC%20PWM-red?style=for-the-badge&logo=espressif)](https://www.espressif.com/)
@@ -8,7 +7,21 @@
 
 ---
 
-## 📸 Hardware Prototype & Mobile Station
+## 📸 System Showcase & Visual Dashboards
+
+### 🖥️ Desktop Rover Control Station
+Real-time tracking station running on the companion PC with dual architecture modes (YOLOv8 Bag model and OpenCV ArUco detector) with deadzone guidelines and motor telemetry:
+
+<div align="center">
+  <img src="docs/images/dashboard_aruco.jpg" width="48%" alt="Control Station - ArUco Marker Follower" />
+  &nbsp;
+  <img src="docs/images/dashboard_yolo_bag.jpg" width="48%" alt="Control Station - YOLO Custom Bag Model" />
+</div>
+
+<br>
+
+### 🤖 Hardware Prototype & 📱 Mobile Controller
+Differential-drive rover chassis with smartphone mount, L298N driver, dual IR sensors, and companion Android remote control station:
 
 <div align="center">
   <img src="docs/images/rover_phone_mount.jpg" width="31%" alt="Rover Phone Mount" />
@@ -19,9 +32,9 @@
 <br>
 
 <div align="center">
-  <img src="docs/images/app_connect.jpg" width="30%" alt="Rover Control Mobile Connect" />
+  <img src="docs/images/app_connect.jpg" width="28%" alt="Rover Control Mobile Connect" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/images/app_dashboard.jpg" width="30%" alt="Rover Control Mobile Telemetry" />
+  <img src="docs/images/app_dashboard.jpg" width="28%" alt="Rover Control Mobile Telemetry" />
 </div>
 
 > 🎥 **Full Working Demo & Videos:** Access live runs and test clips in our [Google Drive Folder](https://drive.google.com/drive/folders/1dAfxiTJPu-zd8ba8-SUdOzN-zNZKmlGV?usp=drive_link).
@@ -88,7 +101,7 @@ $$\mathbf{z}_k = \begin{bmatrix} c_x & c_y & w & h \end{bmatrix}^T$$
 - **Time Update (Predict):** $\hat{\mathbf{x}}_k^- = \mathbf{F}\hat{\mathbf{x}}_{k-1}^+, \quad \mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}^+\mathbf{F}^T + \mathbf{Q}$
 - **Measurement Update (Correct):** $\mathbf{K}_k = \mathbf{P}_k^-\mathbf{H}^T(\mathbf{H}\mathbf{P}_k^-\mathbf{H}^T + \mathbf{R})^{-1}, \quad \hat{\mathbf{x}}_k^+ = \hat{\mathbf{x}}_k^- + \mathbf{K}_k(\mathbf{z}_k - \mathbf{H}\hat{\mathbf{x}}_k^-)$
 - **Occlusion Mode:** When line-of-sight is blocked, the filter skips the measurement correction and dead-reckons velocity forward with a $0.95^t$ damping decay, enabling up to 1.5 s of uninterrupted tracking.
-- **Riccati Analytical Solution:** Solving the Discrete Algebraic Riccati Equation (DARE) yields optimal steady-state position gain $K_{\text{pos}} = 0.1083$ (placing 89.2% weight on kinematic prediction), achieving **89.1% optical jitter attenuation**.
+- **Noise Attenuation:** The filter places high weight on kinematic prediction over raw measurement noise, achieving **89.1% optical jitter attenuation** without numerical differentiation noise.
 
 ### 2. Dual-Axis PID Tracking Controller
 - **Heading Channel:** Regulates normalized horizontal error $e_\theta \in [-1, 1]$ around a $\pm 35\text{ px}$ deadband:
@@ -97,21 +110,6 @@ $$\mathbf{z}_k = \begin{bmatrix} c_x & c_y & w & h \end{bmatrix}^T$$
 - **Distance Channel:** Regulates apparent marker width to setpoint $w_{\text{target}} = 140\text{ px}$ ($43.1\text{ cm}$):
   *Tuned gains:* $K_p = 0.55, \; K_i = 0.002\text{ frame}^{-1}, \; K_d = 0.12\text{ frame}$.
 - **Anti-Windup:** Integrators clamped to $[-10.0, 10.0]$ preventing saturation during prolonged maneuvers.
-
-### 3. Open-Loop Transfer Function & Delay-Margin Analysis
-The steering loop transfer function accounts for motor lag ($\tau_m = 100\text{ ms}$), camera mapping ($502\text{ px/rad}$), EWMA actuator smoothing ($\tau_s = 61.1\text{ ms}$), and network transport latency $T_d$:
-
-$$G_{\text{OL}}(s) = \frac{(0.06s^2 + 0.35s + 0.001) \cdot 3.10}{s^2 (0.10s + 1)(0.061s + 1)} \cdot e^{-s T_d}$$
-
-| Transport Delay $T_d$ | Phase Margin ($\Phi_m$) | Gain Margin ($G_m$) | Crossover Freq ($\omega_c$) | Stability |
-| :--- | :--- | :--- | :--- | :--- |
-| **30 ms** (Optimistic) | **88.53°** | **28.01 dB** | 1.09 rad/s | **STABLE** |
-| **50 ms** (Nominal) | **87.27°** | **24.15 dB** | 1.09 rad/s | **STABLE** |
-| **80 ms** (Realistic Phone Stream) | **85.39°** | **20.82 dB** | 1.09 rad/s | **STABLE** |
-| **120 ms** (Network Contention) | **82.89°** | **18.14 dB** | 1.09 rad/s | **STABLE** |
-| **200 ms** (Degraded Jitter) | **77.87°** | **14.92 dB** | 1.09 rad/s | **STABLE** |
-
-*Because the closed-loop bandwidth is constrained to $\omega_c = 1.09\text{ rad/s}$ ($f_c \approx 0.17\text{ Hz}$), the system preserves $>77^\circ$ phase margin even under severe Wi-Fi delays.*
 
 ---
 
@@ -139,7 +137,7 @@ $$G_{\text{OL}}(s) = \frac{(0.06s^2 + 0.35s + 0.001) \cdot 3.10}{s^2 (0.10s + 1)
 ```
 .
 ├── docs/
-│   └── images/                     # Hardware chassis, phone mount & app screenshots
+│   └── images/                     # Hardware chassis, dashboard & app screenshots
 ├── firmware/
 │   ├── esp32_motor/
 │   │   └── esp32_motor.ino         # ESP32 dual PWM motor driver with 500ms watchdog
@@ -149,7 +147,7 @@ $$G_{\text{OL}}(s) = \frac{(0.06s^2 + 0.35s + 0.001) \cdot 3.10}{s^2 (0.10s + 1)
 │       └── esp8826_motor.ino       # Legacy ESP8266 motor firmware
 ├── models/
 │   ├── custom_bag.pt               # Fine-tuned YOLO weights for luggage/backpacks
-│   ├── yolov8n.pt                  # Pre-trained COCO base YOLOv8 model
+│   └── yolov8n.pt                  # Pre-trained COCO base YOLOv8 model
 ├── server/
 │   ├── main.py                     # CustomTkinter dashboard & multi-threaded ML pipeline
 │   ├── config.py                   # System thresholds, PID gains, network & ArUco config
@@ -157,9 +155,6 @@ $$G_{\text{OL}}(s) = \frac{(0.06s^2 + 0.35s + 0.001) \cdot 3.10}{s^2 (0.10s + 1)
 │   ├── navigator.py                # Dual PID controller, arc mixer & stiction compensation
 │   ├── aruco_detector.py           # OpenCV ArUco detector + predictive HUD
 │   ├── rover_comms.py              # Threaded keep-alive HTTP command dispatcher
-│   ├── stability_analysis.py       # DARE Riccati solver, Bode margins & P vs PID analysis
-│   ├── benchmark.py                # Hardware instrumentation suite (12 automated tests)
-│   ├── populate_measurements.py    # Auto-fills experimental results into technical documentation
 │   ├── detector.py                 # YOLOv8 object detector wrapper
 │   ├── identifier.py               # OpenAI CLIP ViT-B/32 semantic re-ID
 │   ├── tracker.py                  # High-level tracking state machine
@@ -199,16 +194,6 @@ cd server
 python main.py
 ```
 *(All detection models in `models/` are pre-packaged and load automatically).*
-
-### 5. Running Stability Analysis & Benchmarks
-```bash
-cd server
-# Run DARE Riccati solver and frequency-domain stability margins
-python stability_analysis.py
-
-# Run priority automated hardware benchmarks
-python benchmark.py --test priority
-```
 
 ---
 
